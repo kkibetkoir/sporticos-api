@@ -5,24 +5,28 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // ============ CONFIGURATION ============
-const BETIKA_API = {
+const SPORTICOS_API = {
   baseUrl: "https://api.betika.com/v1",
-  liveBaseUrl: "https://live.betika.com/v1",
+  //liveBaseUrl: "https://live.betika.com/v1",
   endpoints: {
-    sports: "/uo/sports",
-    matches: "/uo/matches",
-    match: "/uo/match",
-    sport: "/uo/sport",
-    jackpot: "/jackpot/events",
-    jackpotEvent: "/jackpot/event",   // <-- add this
-    previousJackpot: "/jackpot/previous",
-    boosted: "/boosted/events",
+    sport: "/soccer",
+    match: "/match",
+    live: "/live",
+    v2: "v2",
   },
+
+  /*
+  https://sporticos.com/_i18n/wWX-Arq-/en-gb/messages.json
+  https://sporticos.com/api/bonus-offer/en-gb
+  https://sporticos.com/api/proxy/api/soccer/match/slugs
+  https://sporticos.com/api/proxy/api/soccer/league/slugs
+  https://sporticos.com/api/proxy/api/soccer/match/routing
+  */
 };
 
 // ============ IN-MEMORY CACHE ============
 let cache = {
-  matches: [],
+  live: [],
   jackpots: [],
   jackpotEvents: null,   // <-- add
   previousJackpots: [],
@@ -33,10 +37,10 @@ let cache = {
 };
 
 // ============ API SERVICE ============
-class BetikaApiService {
+class SporticosApiService {
   constructor() {
-    this.baseUrl = BETIKA_API.baseUrl;
-    this.liveBaseUrl = BETIKA_API.liveBaseUrl;
+    this.baseUrl = SPORTICOS_API.baseUrl;
+    //this.liveBaseUrl = SPORTICOS_API.liveBaseUrl;
   }
 
   async fetchWithTimeout(url, timeout = 10000) {
@@ -55,91 +59,225 @@ class BetikaApiService {
     }
   }
 
-  // Get all sports
-  async getSports() {
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.sports}`;
+  // Get live matches with filters
+  async getLiveMatches(params = {}) {
+    const {
+      ids = [1431908,1433768,870224],
+    } = params;
+
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${page}&ids=${ids}`;
     return this.fetchWithTimeout(url);
   }
 
-  // Get matches with filters
-  async getMatches(params = {}) {
+  // Get competitions with matches
+  async getCompetitionsWithMatches(params = {}) {
     const {
-      page = 1,
-      limit = 100,
-      sport_id = null,
-      sub_type_id = "1,186,340",
-      sort_id = 1,
-      period_id = -1,
-      tab = "",
-      esports = false,
+      limit = 10,
+      offset = 0,
+      fromDate,//2026-09-25T21:00:00Z
+      toDate,//2026-09-26T20:59:59Z
     } = params;
 
-    let url = `${this.baseUrl}${BETIKA_API.endpoints.matches}?page=${page}&limit=${limit}&sub_type_id=${sub_type_id}&sort_id=${sort_id}&period_id=${period_id}&esports=${esports}`;
+    let url = `https://sporticos.com/api/proxy/api/en-gb/soccer/fixtures/competitions-with-matches?limit=${limit}&offset=${page}&from=${fromDate}&to=${toDate}`;
+    return this.fetchWithTimeout(url);
+  }
 
-    if (sport_id) url += `&sport_id=${sport_id}`;
-    if (tab) url += `&tab=${tab}`;
-
+  // Get fixtures
+  async getFixtures() {
+    const url = `https://sporticos.com/api/proxy/api/en-gb/soccer/fixtures`;
     return this.fetchWithTimeout(url);
   }
 
   // Get match details by match_id
   async getMatch(matchId) {
-    const url = `${this.liveBaseUrl}${BETIKA_API.endpoints.match}?id=${matchId}`;
+    const url = `${this.liveBaseUrl}${SPORTICOS_API.endpoints.match}?id=${matchId}`;
     return this.fetchWithTimeout(url);
   }
 
-  // Get match details by parent_match_id
-  async getMatchByParentId(parentMatchId) {
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.match}?parent_match_id=${parentMatchId}`;
+  //Get how to watch a match
+  async getMatchWatch(matchId) {
+    const url = `${this.liveBaseUrl}/match/${matchId}/how-to-watch`
     return this.fetchWithTimeout(url);
   }
 
-  // Get matches by sport
-  async getMatchesBySport(sportId, params = {}) {
+  //Get match header
+  async getMatchHeader(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/header`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match tv
+  async getMatchTv(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/tv`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match vpn-offer
+  async getMatchVpnOffer(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/vpn-offer`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match odds and predictions
+  async getMatchOddAndPredictions(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/feed/odds_and_predictions`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match betting tips
+  async getMatchBettingTips(matchId, params = {}) {
     const {
-      page = 1,
       limit = 100,
-      sub_type_id = "1,186,340",
-      sort_id = 1,
-      period_id = -1,
+      offset = 0,
+    } = params;
+    const url = `${this.baseUrl}/match/${matchId}/feed/betting_tips?limit=${limit}&offset=${offset}`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match head-to-head
+  async getMatchHeadToHead(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/feed/head_to_head`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match brackets
+  //A match bracket (or tournament bracket) is a tree-like visual diagram that maps out every head-to-head matchup in a knockout tournament, showing how players or teams advance from the early rounds all the way to the championship
+  async getMatchBrackets(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/feed/brackets`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match feeds
+  async getMatchFeeds(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/feeds`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match form
+  async getMatchForm(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/feed/form`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get match statistics
+  async getMatchStatistics(matchId) {
+    const url = `${this.baseUrl}/match/${matchId}/statistics`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get predictions
+  async getMatchPredictions(date) {
+    let url = `${this.baseUrl}${sport}/predictions-new/`
+    url = date !== "" ? url : url + date
+    return this.fetchWithTimeout(url);
+  }
+
+  // Get predictions
+  async getPredictions(sportId, params = {}) {
+    const {
+      limit = 10,
+      offset = 0,
+      is_published = 1,
+      lang = en
     } = params;
 
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.matches}?page=${page}&limit=${limit}&sport_id=${sportId}&sub_type_id=${sub_type_id}&sort_id=${sort_id}&period_id=${period_id}`;
+    const url = `https://sporticos.com/api/news-proxy/read/match_prediction_posts?limit=${limit}&offset=${offset}&is_published=${is_published}&slang=${en}`; //&published_at%5Blte%5D=2026-02-26T04:12:00%2B03:00
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get team fixture prediction
+  async getMatchStatistics(matchId, params = {}) {
+    const {
+      homeTeamName,//augsburg
+      awayTeamName,//cologne
+      date,//27-02-2026
+      lang = en
+    } = params;
+    const url = `https://sporticos.com/api/news-proxy/match_prediction_posts/${matchId}-${matchId}-predictions-${date}?lang=${lang}`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get league header
+  async getLeagueHeader(leagueId) {
+    let url = `https://sporticos.com/api/proxy/api/en-gb/soccer/league/${leagueId}/header`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get league table/standings
+  async getLeagueTable(leagueId) {
+    let url = `https://sporticos.com/api/proxy/api/en-gb/soccer/league/${leagueId}/table`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get league last results
+  async getLeagueLastResults(leagueId) {
+    let url = `https://sporticos.com/api/proxy/api/en-gb/soccer/league/${leagueId}/lastResults`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get league fixtures
+  async getLeagueFixtures(matchId, params = {}) {
+    const {
+      limit = 10,
+      offset = 0
+    } = params;
+
+    const url = `https://sporticos.com/api/proxy/api/en-gb/soccer/league/233/fixtures?limit=${limit}&?offset=${offset}`
+    return this.fetchWithTimeout(url);
+  }
+
+  //Get single post
+  async getSinglePost(postId) {
+    let url = `https://sporticos.com/api/news-proxy/read/posts/${postId}`
+    return this.fetchWithTimeout(url);
+  }
+
+
+  // Get predictions
+  async getPredictions(sportId, params = {}) {
+    const {
+      limit = 10,
+      offset = 0,
+      is_published = 1,
+      lang = en
+    } = params;
+
+    const url = `https://sporticos.com/api/news-proxy/read/posts?limit==${limit}&offset=${offset}&is_published=${is_published}&slang=${en}`; //&published_at%5Blte%5D=2026-02-26T04:12:00%2B03:00
     return this.fetchWithTimeout(url);
   }
 
   // Get sport categories and competitions
   async getSport(sportId, params = {}) {
     const { page = 1, limit = 100 } = params;
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.sport}?page=${page}&limit=${limit}&id=${sportId}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}?page=${page}&limit=${limit}&id=${sportId}`;
     return this.fetchWithTimeout(url);
   }
 
   // Get jackpot events
   async getJackpotData() {
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.jackpot}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.jackpot}`;
     return this.fetchWithTimeout(url);
   }
 
   async getJackpotEvents(eventId) {
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.jackpotEvent}?id=${eventId}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.jackpotEvent}?id=${eventId}`;
     return this.fetchWithTimeout(url);
   }
 
   // Get previous jackpots
   async getPreviousJackpots() {
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.previousJackpot}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.previousJackpot}`;
     return this.fetchWithTimeout(url);
   }
 
   // Get boosted events
   async getBoostedEvents() {
-    const url = `${this.baseUrl}${BETIKA_API.endpoints.boosted}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.boosted}`;
     return this.fetchWithTimeout(url);
   }
 }
 
-const apiService = new BetikaApiService();
+const apiService = new SporticosApiService();
 
 // ============ CACHE UPDATE FUNCTIONS ============
 async function updateCache() {
@@ -151,8 +289,8 @@ async function updateCache() {
       sport_id: 14,
       sort_id: 1,
     });
-    cache.matches = matchesData.data || [];
-    cache.matchesMeta = matchesData.meta || {};
+    cache.live = matchesData.data || [];
+    cache.liveMeta = matchesData.meta || {};
 
     // Fetch sports
     const sportsData = await apiService.getSports();
@@ -177,7 +315,7 @@ async function updateCache() {
 
     cache.lastUpdate = new Date().toISOString();
     console.log(`✅ Cache updated at ${cache.lastUpdate}`);
-    console.log(`   - ${cache.matches.length} matches loaded`);
+    console.log(`   - ${cache.live.length} matches loaded`);
     console.log(`   - ${cache.sports.length} sports loaded`);
     console.log(`   - ${cache.jackpots.length} jackpots loaded`);
   } catch (error) {
@@ -208,71 +346,6 @@ async function updateJackpotCache() {
   }
 }
 
-// ============ DATA TRANSFORMERS ============
-function transformMatch(match) {
-  return {
-    id: match.match_id,
-    homeTeam: match.home_team,
-    awayTeam: match.away_team,
-    startTime: match.start_time,
-    competition: match.competition_name,
-    category: match.category,
-    sportId: match.sport_id,
-    sportName: match.sport_name,
-    competitionId: match.competition_id,
-    parentMatchId: match.parent_match_id,
-    sideBets: match.side_bets,
-    homeOdd: match.home_odd,
-    neutralOdd: match.neutral_odd,
-    awayOdd: match.away_odd,
-    isEsport: match.is_esport,
-    isSrl: match.is_srl,
-    provider: match.provider,
-    liveStatus: match.match_status,
-    currentScore: match.current_score,
-    matchTime: match.match_time,
-    eventStatus: match.event_status,
-    odds: match.odds || [],
-    gameId: match.game_id,
-  };
-}
-
-function transformMatchDetail(matchData) {
-  if (!matchData || !matchData.data) return null;
-
-  return {
-    matchId: matchData.meta?.match_id,
-    homeTeam: matchData.meta?.home_team,
-    awayTeam: matchData.meta?.away_team,
-    startTime: matchData.meta?.start_time,
-    competition: matchData.meta?.competition_name,
-    category: matchData.meta?.category,
-    sportId: matchData.meta?.sport_id,
-    sportName: matchData.meta?.sport_name,
-    currentScore: matchData.meta?.current_score,
-    matchStatus: matchData.meta?.match_status,
-    eventStatus: matchData.meta?.event_status,
-    matchTime: matchData.meta?.match_time,
-    homeOdd: matchData.meta?.home_odd,
-    neutralOdd: matchData.meta?.neutral_odd,
-    awayOdd: matchData.meta?.away_odd,
-    markets: matchData.data.map((market) => ({
-      subTypeId: market.sub_type_id,
-      name: market.name,
-      active: market.market_active === 1,
-      odds: market.odds.map((odd) => ({
-        display: odd.display,
-        key: odd.odd_key,
-        value: parseFloat(odd.odd_value) || null,
-        specialBetValue: odd.special_bet_value || null,
-        active: odd.odd_active === 1,
-      })),
-    })),
-    marketGroups: matchData.market_groups || [],
-    meta: matchData.meta,
-  };
-}
-
 // ============ API ENDPOINTS ============
 
 // Root endpoint - API documentation
@@ -299,7 +372,7 @@ app.get("/", (req, res) => {
     },
     cache: {
       lastUpdate: cache.lastUpdate,
-      totalMatches: cache.matches.length,
+      totalMatches: cache.live.length,
       totalSports: cache.sports.length,
     },
     timestamp: new Date().toISOString(),
@@ -372,11 +445,9 @@ app.get("/api/matches", async (req, res) => {
       esports: esports === "true",
     });
 
-    const transformedMatches = (data.data || []).map(transformMatch);
-
     res.json({
       success: true,
-      data: transformedMatches,
+      data,
       meta: data.meta || {},
       total: data.meta?.total || 0,
       page: parseInt(page),
@@ -412,11 +483,9 @@ app.get("/api/matches/sport/:sportId", async (req, res) => {
       period_id: parseInt(period_id),
     });
 
-    const transformedMatches = (data.data || []).map(transformMatch);
-
     res.json({
       success: true,
-      data: transformedMatches,
+      data,
       meta: data.meta || {},
       total: data.meta?.total || 0,
       page: parseInt(page),
@@ -439,13 +508,13 @@ app.get("/api/matches/:id", async (req, res) => {
 
   try {
     // Try to find in cache first
-    let match = cache.matches.find((m) => m.match_id == id);
+    let match = cache.live.find((m) => m.match_id == id);
 
     if (match) {
       return res.json({
         success: true,
         source: "cache",
-        data: transformMatch(match),
+        data: match,
         timestamp: new Date().toISOString(),
       });
     }
@@ -461,42 +530,10 @@ app.get("/api/matches/:id", async (req, res) => {
       });
     }
 
-    // Add to cache
-    if (data.meta && data.meta.match_id) {
-      const existingIndex = cache.matches.findIndex(
-        (m) => m.match_id == data.meta.match_id,
-      );
-      const transformed = {
-        match_id: data.meta.match_id,
-        home_team: data.meta.home_team,
-        away_team: data.meta.away_team,
-        start_time: data.meta.start_time,
-        competition_name: data.meta.competition_name,
-        category: data.meta.category,
-        sport_id: data.meta.sport_id,
-        sport_name: data.meta.sport_name,
-        parent_match_id: data.meta.parent_match_id,
-        home_odd: data.meta.home_odd,
-        neutral_odd: data.meta.neutral_odd,
-        away_odd: data.meta.away_odd,
-        match_status: data.meta.match_status,
-        current_score: data.meta.current_score,
-        match_time: data.meta.match_time,
-        event_status: data.meta.event_status,
-      };
-      if (existingIndex !== -1) {
-        cache.matches[existingIndex] = transformed;
-      } else {
-        cache.matches.push(transformed);
-      }
-    }
-
-    const transformed = transformMatchDetail(data);
-
     res.json({
       success: true,
       source: "api",
-      data: transformed,
+      data,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -523,11 +560,9 @@ app.get("/api/match/parent/:parentMatchId", async (req, res) => {
       });
     }
 
-    const transformed = transformMatchDetail(data);
-
     res.json({
       success: true,
-      data: transformed,
+      data,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -554,11 +589,9 @@ app.get("/api/match/:matchId", async (req, res) => {
       });
     }
 
-    const transformed = transformMatchDetail(data);
-
     res.json({
       success: true,
-      data: transformed,
+      data,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -658,7 +691,7 @@ app.get("/api/refresh", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "healthy",
-    matchesCount: cache.matches.length,
+    matchesCount: cache.live.length,
     sportsCount: cache.sports.length,
     jackpotsCount: cache.jackpots.length,
     lastUpdate: cache.lastUpdate,
@@ -742,7 +775,7 @@ async function startServer() {
     console.log(`  http://localhost:${PORT}/api/jackpot`);
 
     console.log(
-      `\n📊 Cache status: ${cache.matches.length} matches, ${cache.sports.length} sports loaded`,
+      `\n📊 Cache status: ${cache.live.length} matches, ${cache.sports.length} sports loaded`,
     );
     console.log(`🔄 Auto-refresh every 5 minutes`);
   });
