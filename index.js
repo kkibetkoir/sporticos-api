@@ -8,8 +8,6 @@ const PORT = process.env.PORT || 3000;
 // ============ MIDDLEWARE ============
 app.use(cors()); // <-- ADD THIS (allows all origins)
 
-const cors = require("cors");
-
 const allowedOrigins = [
   "https://sportiq-2dvc.onrender.com",
   "http://localhost:3000",
