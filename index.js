@@ -1,8 +1,53 @@
 const express = require("express");
 const axios = require("axios");
 const path = require("path");
+const cors = require("cors");
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ============ MIDDLEWARE ============
+app.use(cors()); // <-- ADD THIS (allows all origins)
+
+const cors = require("cors");
+
+const allowedOrigins = [
+  "https://sportiq-2dvc.onrender.com",
+  "http://localhost:3000",
+  "http://localhost:5173", // if using Vite
+];
+
+//Better: Restrict to your known origins
+/*app.use(cors({
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+}));
+
+// Handle preflight requests
+app.options("*", cors());*/
+
+app.use(express.json());
+
+//Option 2: Manual middleware (no dependency)
+/*app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*"); // or specific origin
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  
+  // Handle preflight
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});*/
 
 // ============ CONFIGURATION ============
 const SPORTICOS_API = {
