@@ -145,31 +145,31 @@ class SporticosApiService {
 
   //Get how to watch a match
   async getMatchWatch(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/how-to-watch`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/how-to-watch`
     return this.fetchWithTimeout(url);
   }
 
   //Get match header
   async getMatchHeader(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/header`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/header`
     return this.fetchWithTimeout(url);
   }
 
   //Get match tv
   async getMatchTv(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/tv`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/tv`
     return this.fetchWithTimeout(url);
   }
 
   //Get match vpn-offer
   async getMatchVpnOffer(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/vpn-offer`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/vpn-offer`
     return this.fetchWithTimeout(url);
   }
 
   //Get match odds and predictions
   async getMatchOddAndPredictions(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/odds_and_predictions`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/odds_and_predictions`
     return this.fetchWithTimeout(url);
   }
 
@@ -179,38 +179,38 @@ class SporticosApiService {
       limit = 100,
       offset = 0,
     } = params;
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/betting_tips?limit=${limit}&offset=${offset}`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/betting_tips?limit=${limit}&offset=${offset}`
     return this.fetchWithTimeout(url);
   }
 
   //Get match head-to-head
   async getMatchHeadToHead(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/head_to_head`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/head_to_head`
     return this.fetchWithTimeout(url);
   }
 
   //Get match brackets
   //A match bracket (or tournament bracket) is a tree-like visual diagram that maps out every head-to-head matchup in a knockout tournament, showing how players or teams advance from the early rounds all the way to the championship
   async getMatchBrackets(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/brackets`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/brackets`
     return this.fetchWithTimeout(url);
   }
 
   //Get match feeds
   async getMatchFeeds(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feeds`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feeds`
     return this.fetchWithTimeout(url);
   }
 
   //Get match form
   async getMatchForm(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/form`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/form`
     return this.fetchWithTimeout(url);
   }
 
   //Get match statistics
   async getMatchStatistics(matchId) {
-    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/statistics`
+    const url = `${this.baseUrl}en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/statistics`
     return this.fetchWithTimeout(url);
   }
 
@@ -392,7 +392,6 @@ app.get("/api/providers", async (req, res) => {
     res.json({
       success: true,
       data: data.data || [],
-      meta: data.meta || {},
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -498,11 +497,11 @@ app.get("/api/fixtures", async (req, res) => {
 });
 
 // Get match by ID
-app.get("/api/match/:id", async (req, res) => {
-  const { id } = req.params;
+app.get("/api/match/:matchId", async (req, res) => {
+  const { matchId } = req.params;
 
   try {
-    const data = await apiService.getMatch(id);
+    const data = await apiService.getMatch(matchId);
     res.json({
       success: true,
       data,
@@ -518,10 +517,10 @@ app.get("/api/match/:id", async (req, res) => {
 });
 
  //Get how to watch a match
-app.get("/api/match/:id/how-to-watch", async (req, res) => {
-  const { id } = req.params;
+app.get("/api/match/:matchId/how-to-watch", async (req, res) => {
+  const { matchId } = req.params;
   try {
-    const data = await apiService.getMatchWatch(id);
+    const data = await apiService.getMatchWatch(matchId);
 
     res.json({
       success: true,
