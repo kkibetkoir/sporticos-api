@@ -230,7 +230,7 @@ class SporticosApiService {
       lang = "en"
     } = params;
 
-    const url = `https://sporticos.com/api/news-proxy/read/match_prediction_posts?limit=${limit}&offset=${offset}&is_published=${is_published}&slang=${en}`; //&published_at%5Blte%5D=2026-02-26T04:12:00%2B03:00&with_total=0
+    const url = `https://sporticos.com/api/news-proxy/read/match_prediction_posts?limit=${limit}&offset=${offset}&is_published=${is_published}&slang=${lang}`; //&published_at%5Blte%5D=2026-02-26T04:12:00%2B03:00&with_total=0
     return this.fetchWithTimeout(url);
   }
 
