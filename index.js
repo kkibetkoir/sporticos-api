@@ -411,8 +411,7 @@ app.get("/api/bookmakers", async (req, res) => {
     const data = await apiService.getBookmakers();
     res.json({
       success: true,
-      data: data.data || [],
-      meta: data.meta || {},
+      data: data,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
