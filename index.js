@@ -216,7 +216,7 @@ class SporticosApiService {
 
   //Get predictions by date
   async getMatchPredictions(date) {
-    let url = `${this.baseUrl}${sport}/predictions-new/`
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/predictions-new/`
     url = date !== "" ? url : url + date
     return this.fetchWithTimeout(url);
   }
