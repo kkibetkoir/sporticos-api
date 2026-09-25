@@ -49,23 +49,12 @@ app.use(express.json());
 
 // ============ CONFIGURATION ============
 const SPORTICOS_API = {
-  baseUrl: "https://sporticos.com/api/proxy/api",
+  baseUrl: "https://sporticos.com/api/proxy/api/en-gb",
   endpoints: {
     sport: "/soccer",
     match: "/match",
     live: "/live",
   },
-
-  /*
-  for later reference
-  https://sporticos.com/_i18n/wWX-Arq-/en-gb/messages.json
-  https://sporticos.com/api/bonus-offer/en-gb
-  https://sporticos.com/api/proxy/api/soccer/match/slugs
-  https://sporticos.com/api/proxy/api/soccer/league/slugs
-  https://sporticos.com/api/proxy/api/soccer/match/routing
-  https://sporticos.com/api/proxy/api/en-gb/soccer/v2/providers-new/2/leagues
-  https://sporticos.com/api/proxy/api/en-gb/soccer/v2/providers-new/2/fixtures?from=2026-09-25&to=2026-09-25
-  */
 };
 
 
@@ -98,7 +87,7 @@ class SporticosApiService {
     countryId = 4,
     isPublished = 1,
     } = params
-    const url = `${this.baseUrl}/en-gb/soccer/v2/providers-new?${countryId}&is_published=${isPublished}`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/v2/providers-new?${countryId}&is_published=${isPublished}`
     return this.fetchWithTimeout(url);
   }
   
@@ -114,7 +103,7 @@ class SporticosApiService {
       ids = [1431908,1433768,870224],
     } = params;
 
-    let url = `${this.baseUrl}/${SPORTICOS_API.endpoints.sport}live&ids=${ids}`;
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/live&ids=${ids}`;
     return this.fetchWithTimeout(url);
   }
 
@@ -127,49 +116,49 @@ class SporticosApiService {
       toDate,//2026-09-26T20:59:59Z
     } = params;
 
-    let url = `${this.baseUrl}/en-gb/soccer/fixtures/competitions-with-matches?limit=${limit}&offset=${offset}&from=${fromDate}&to=${toDate}`;
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/fixtures/competitions-with-matches?limit=${limit}&offset=${offset}&from=${fromDate}&to=${toDate}`;
     return this.fetchWithTimeout(url);
   }
 
   // Get fixtures
   async getFixtures() {
-    const url = `${this.baseUrl}/en-gb/soccer/fixtures`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/fixtures`;
     return this.fetchWithTimeout(url);
   }
 
   // Get match details by match_id
   async getMatch(matchId) {
-    const url = `${this.baseUrl}/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}?id=${matchId}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}?id=${matchId}`;
     return this.fetchWithTimeout(url);
   }
 
   //Get how to watch a match
   async getMatchWatch(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/how-to-watch`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/how-to-watch`
     return this.fetchWithTimeout(url);
   }
 
   //Get match header
   async getMatchHeader(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/header`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/header`
     return this.fetchWithTimeout(url);
   }
 
   //Get match tv
   async getMatchTv(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/tv`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/tv`
     return this.fetchWithTimeout(url);
   }
 
   //Get match vpn-offer
   async getMatchVpnOffer(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/vpn-offer`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/vpn-offer`
     return this.fetchWithTimeout(url);
   }
 
   //Get match odds and predictions
   async getMatchOddAndPredictions(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/odds_and_predictions`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/odds_and_predictions`
     return this.fetchWithTimeout(url);
   }
 
@@ -179,45 +168,44 @@ class SporticosApiService {
       limit = 100,
       offset = 0,
     } = params;
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/betting_tips?limit=${limit}&offset=${offset}`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/betting_tips?limit=${limit}&offset=${offset}`
     return this.fetchWithTimeout(url);
   }
 
   //Get match head-to-head
   async getMatchHeadToHead(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/head_to_head`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/head_to_head`
     return this.fetchWithTimeout(url);
   }
 
   //Get match brackets
   //A match bracket (or tournament bracket) is a tree-like visual diagram that maps out every head-to-head matchup in a knockout tournament, showing how players or teams advance from the early rounds all the way to the championship
   async getMatchBrackets(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/brackets`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/brackets`
     return this.fetchWithTimeout(url);
   }
 
   //Get match feeds
   async getMatchFeeds(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feeds`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feeds`
     return this.fetchWithTimeout(url);
   }
 
   //Get match form
   async getMatchForm(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/form`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/feed/form`
     return this.fetchWithTimeout(url);
   }
 
   //Get match statistics
   async getMatchStatistics(matchId) {
-    const url = `${this.baseUrl}/en-gb/${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/statistics`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}${SPORTICOS_API.endpoints.match}/${matchId}/statistics`
     return this.fetchWithTimeout(url);
   }
 
   //Get predictions by date
   async getMatchPredictions(date) {
-    let url = `${this.baseUrl}/${SPORTICOS_API.endpoints.sport}predictions-new/`
-    url = date !== "" ? url : url + date
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/predictions-new/${date}`
     return this.fetchWithTimeout(url);
   }
 
@@ -242,9 +230,10 @@ class SporticosApiService {
       date,
     } = params;
 
-    //or without market ${this.baseUrl}/en-gb/soccer/predictions-new/2026-09-25
+    //or without market ${this.baseUrl}${SPORTICOS_API.endpoints.sport}/predictions-new/2026-09-25
 
-    const url = `${this.baseUrl}/en-gb/soccer/predictions-new/${date}/market/${market}`;
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/predictions-new/${date}/market/${market}`;
+
     return this.fetchWithTimeout(url);
   }
 
@@ -262,19 +251,19 @@ class SporticosApiService {
 
   //Get league header
   async getLeagueHeader(leagueId) {
-    let url = `${this.baseUrl}/en-gb/soccer/league/${leagueId}/header`
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/league/${leagueId}/header`
     return this.fetchWithTimeout(url);
   }
 
   //Get league table/standings
   async getLeagueTable(leagueId) {
-    let url = `${this.baseUrl}/en-gb/soccer/league/${leagueId}/table`
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/league/${leagueId}/table`
     return this.fetchWithTimeout(url);
   }
 
   //Get league last results
   async getLeagueLastResults(leagueId) {
-    let url = `${this.baseUrl}/en-gb/soccer/league/${leagueId}/lastResults`
+    let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/league/${leagueId}/lastResults`
     return this.fetchWithTimeout(url);
   }
 
@@ -285,7 +274,7 @@ class SporticosApiService {
       offset = 0
     } = params;
 
-    const url = `${this.baseUrl}/en-gb/soccer/league/${leagueId}/fixtures?limit=${limit}&?offset=${offset}`
+    const url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/league/${leagueId}/fixtures?limit=${limit}&?offset=${offset}`
     return this.fetchWithTimeout(url);
   }
 
@@ -425,11 +414,11 @@ app.get("/api/bookmakers", async (req, res) => {
 // Get live matches with filtering
 app.get("/api/live", async (req, res) => {
   const {
-    ids = [],
+    ids,
   } = req.query;
 
   try {
-    const data = await apiService.getLiveMatches(params = {ids : []});
+    const data = await apiService.getLiveMatches({ids});
     res.json({
       success: true,
       data,

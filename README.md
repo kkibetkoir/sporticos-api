@@ -508,3 +508,14 @@ ISC (or your project's license).
 ## Disclaimer
 
 This API proxies publicly available data from Sporticos. Respect Sporticos' terms of service and rate limits. Not affiliated with Sporticos.
+
+<!--
+  for later reference
+  https://sporticos.com/_i18n/wWX-Arq-/en-gb/messages.json
+  https://sporticos.com/api/bonus-offer/en-gb
+  https://sporticos.com/api/proxy/api${SPORTICOS_API.endpoints.sport}/match/slugs
+  https://sporticos.com/api/proxy/api${SPORTICOS_API.endpoints.sport}/league/slugs
+  https://sporticos.com/api/proxy/api${SPORTICOS_API.endpoints.sport}/match/routing
+  https://sporticos.com/api/proxy/api/en-gb${SPORTICOS_API.endpoints.sport}/v2/providers-new/2/leagues
+  https://sporticos.com/api/proxy/api/en-gb${SPORTICOS_API.endpoints.sport}/v2/providers-new/2/fixtures?from=2026-09-25&to=2026-09-25
+  -->
