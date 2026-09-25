@@ -783,7 +783,6 @@ app.get("/api/prediction_posts", async (req, res) => {
       success: true,
       data,
       timestamp: new Date().toISOString(),
-      date,
     });
   } catch (error) {
     res.status(500).json({
