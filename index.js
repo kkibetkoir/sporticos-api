@@ -86,6 +86,7 @@ class SporticosApiService {
       }
       return await response.json();
     } catch (error) {
+      console.log(error)
       clearTimeout(timeoutId);
       throw error;
     }
@@ -226,7 +227,7 @@ class SporticosApiService {
       limit = 10,
       offset = 0,
       is_published = 1,
-      lang = en
+      lang = "en"
     } = params;
 
     const url = `https://sporticos.com/api/news-proxy/read/match_prediction_posts?limit=${limit}&offset=${offset}&is_published=${is_published}&slang=${en}`; //&published_at%5Blte%5D=2026-02-26T04:12:00%2B03:00&with_total=0
@@ -253,7 +254,7 @@ class SporticosApiService {
       homeTeamName,//augsburg
       awayTeamName,//cologne
       date,//27-02-2026
-      lang = en
+      lang = "en"
     } = params;
     const url = `https://sporticos.com/api/news-proxy/match_prediction_posts/${matchId}-${matchId}-predictions-${date}?lang=${lang}`
     return this.fetchWithTimeout(url);
@@ -294,7 +295,7 @@ class SporticosApiService {
       limit = 10,
       offset = 0,
       isPublished = 1,
-      lang = en
+      lang = "en"
     } = params;
 
     const url = `https://sporticos.com/api/news-proxy/read/posts?limit=${limit}&?offset=${offset}&is_published=${isPublished}&lang=${lang}`//&published_at%5Blte%5D=2026-09-25T08:30:00Z&with_total=0&tag_resource_id=2&tag_resource_type=provider`
@@ -323,7 +324,7 @@ class SporticosApiService {
       limit = 10,
       offset = 0,
       isPublished = 1,
-      lang = en
+      lang = "en"
     } = params;
 
     const url = `https://sporticos.com/api/news-proxy/read/guides?limit=${limit}&?offset=${offset}&is_published=${isPublished}&lang=${lang}`//&published_at%5Blte%5D=2026-09-25T15:00:00Z`
@@ -768,7 +769,7 @@ app.get("/api/prediction_posts", async (req, res) => {
     limit = 50,
     offset = 0,
     is_published = 1,
-    lang = en
+    lang = "en"
    } = req.query;
 
   try {
@@ -826,7 +827,7 @@ app.get("/api/prediction_fixture/", async (req, res) => {
     homeTeamName,//augsburg
     awayTeamName,//cologne
     date,//27-02-2026
-    lang = en
+    lang = "en"
    } = req.query;
 
   try {
@@ -938,7 +939,7 @@ app.get("/api/posts", async (req, res) => {
     limit = 10,
     offset = 0,
     isPublished = 1,
-    lang = en
+    lang = "en"
   } = req.query;
 
   try {
@@ -1008,7 +1009,7 @@ app.get("/api/guides", async (req, res) => {
     limit = 50,
     offset = 0,
     isPublished = 1,
-    lang = en
+    lang = "en"
   } = req.query;
 
   try {

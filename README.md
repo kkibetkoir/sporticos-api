@@ -466,7 +466,7 @@ These are issues in the current implementation that affect runtime behavior:
 | 2 | `getLiveMatches` | URL uses `/live&ids=...` — should be `?ids=...` (query separator) |
 | 3 | `/api/live` handler | Hardcodes `{ ids: [] }`, ignoring `req.query.ids` |
 | 4 | `getMatchPredictions` | References undefined `sport` variable; URL will throw `ReferenceError` |
-| 5 | `getPredictions`, `getPosts`, `getGuides` | `lang = en` — `en` is undefined; should be `"en"`. `slang=${en}` is also undefined |
+| 5 | `getPredictions`, `getPosts`, `getGuides` | `lang = "en"` — `en` is undefined; should be `"en"`. `slang=${en}` is also undefined |
 | 6 | `/api/prediction_posts` | Response references undefined `date` variable |
 | 7 | `getFixturePrediction` | Signature takes `(matchId, params)` but handler calls it with a single object; `matchId` is `undefined` |
 | 8 | `/api/posts/:postId` vs `/api/posts/:title` | Duplicate route patterns; second is unreachable |
