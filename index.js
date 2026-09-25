@@ -99,9 +99,7 @@ class SporticosApiService {
 
   // Get live matches with filters
   async getLiveMatches(params = {}) {
-    const {
-      ids = [1431908,1433768,870224],
-    } = params;
+    const {ids} = params;
 
     let url = `${this.baseUrl}${SPORTICOS_API.endpoints.sport}/live&ids=${ids}`;
     return this.fetchWithTimeout(url);
